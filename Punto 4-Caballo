@@ -1,0 +1,66 @@
+import numpy as np
+import meshio
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+malla = meshio.read("knight.msh")
+pts = malla.points
+tets = malla.cells[0].data
+
+
+Vol_knight = 0
+
+
+for i in range(len(tets)):
+
+    #PUNTO A DEL TETRAEDRO
+
+    kA_i  = tets[i,0] #Toma de la matriz "test" el valor [n,0] que corresponde al lugar
+                     #de "pts" donde se encuentran almacenadas las coordenadas x,y,z del punto
+    A = (pts[kA_i,0], pts[kA_i,1],pts[kA_i,2]) #Almacena las coordenada del punto A
+    
+    #PUNTO B DEL TETRAEDRO
+    kB_i = tets[i,1]
+    B = (pts[kB_i,0],pts[kB_i,1],pts[kB_i,2])
+    
+    #PUNTO C DEL TETRAEDRO
+    kC_i = tets[i,2]
+    C = (pts[kC_i,0],pts[kC_i,1],pts[kC_i,2])
+    
+    #PUNTO D DEL TETRAEDRO
+    kD_i = tets[i,3]
+    D = (pts[kD_i,0],pts[kD_i,1],pts[kD_i,2])
+    
+    #CÁLCULO DE LOS SEGMENTOS DEL TETRAEDRO
+    
+    SAB = (B[0]-A[0],B[1]-A[1],B[2]-A[2]) #SEGMENTO AB
+    U = tuple(SAB) #Vector direccional U
+    
+    SAC = (C[0]-A[0],C[1]-A[1],C[2]-A[2]) #SEGMENTO AC
+    V = tuple(SAC) #Vector direccional V
+    
+    SAD = (D[0]-A[0],D[1]-A[1],D[2]-A[2]) #SEGMENTO AD
+    W = tuple(SAD) #Vector direccional W
+    
+    #GENERACIÓN DE LA MATRIZ 
+    
+    M = np.array((U,V,W)) 
+    
+    #CÁLCULO DEL VOLUMEN DEL TETRAEDRO: 
+    
+    vol = abs(np.linalg.det(M))/6
+
+    Vol_knight = Vol_knight + vol #Calcula el volumen total del caballo
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+x =pts[:,0]
+y =pts[:,1]
+z =pts[:,2]
+
+ax.scatter(x, y, z, s=-20, c='b', marker='o',)
+
+ax.set_xlabel('X Label')
+ax.set_ylabel('Y Label')
+ax.set_zlabel('Z Label')
